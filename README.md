@@ -1,2 +1,1 @@
-# CrimeAnalysis展示地址： [CrimeAnalysis](http://www.geothinking.cn/crimeanalysis)
-CrimeAnalysis
+# CrimeAnalysis展示地址： [CrimeAnalysis](http://luoluojy.cn)
