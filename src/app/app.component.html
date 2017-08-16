@@ -1,0 +1,91 @@
+<div id="menuJY" >
+  <header>
+     <a href="/">
+      <img src="../assets/images/logo.png" alt="logo" width="90" height="60"/>
+      XXXX
+    </a>
+</header>
+
+<nav>
+  <li><a routerLink="/" routerLinkActive="active">首页</a></li>
+    
+
+  <li #source class="dropdown">
+    <a class="dropdown-toggle" (click)="toggle(0)" data-toggle="dropdown" href="#">数据资源
+    <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" style="margin-top:25px;">
+      
+        <li><a routerLink="/source/basemap" routerLinkActive="active">地理底图</a></li>
+    
+        <li><a routerLink="/source/policecase" routerLinkActive="active">警情事件查询</a></li>
+    
+        <li><a routerLink="/source/traffic" routerLinkActive="active">道路交通</a></li>
+    
+        <li><a routerLink="/source/thematicmap" routerLinkActive="active">专题图层</a></li>
+    
+        <li><a routerLink="/source/fulltextretrieval" routerLinkActive="active">全文检索</a></li>
+    
+    </ul>
+  </li>
+
+  <li #statistic class="dropdown">
+    <a class="dropdown-toggle" (click)="toggle(1)" data-toggle="dropdown" href="#">指标统计
+    <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" style="margin-top:25px;">
+      
+        <li><a routerLink="/statistic/regionanalysis" routerLinkActive="active">区域分析</a></li>
+    
+        <li><a routerLink="/statistic/normdashboard" routerLinkActive="active">指标仪表盘</a></li>
+    
+        <li><a routerLink="/statistic/attentionpolicecase" routerLinkActive="active">关注警情</a></li>
+    
+        <li><a routerLink="/statistic/surverypolicecase" routerLinkActive="active">警情概况</a></li>
+    
+    </ul>
+  </li>
+
+  <li #prediction class="dropdown">
+    <a class="dropdown-toggle" (click)="toggle(2)"data-toggle="dropdown" href="#">犯罪预测
+    <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" style="margin-top:25px;">
+      
+        <li><a routerLink="/prediction/timeseriesanalysis" routerLinkActive="active">时序分析</a></li>
+        <li><a routerLink="/prediction/situationanalysis" routerLinkActive="active">态势分析</a></li>
+    </ul>
+  </li>
+
+  <li #hotspot class="dropdown">
+    <a class="dropdown-toggle"(click)="toggle(3)" data-toggle="dropdown" href="#">犯罪热点
+    <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" style="margin-top:25px;">
+      
+        <li><a routerLink="/hotspot/desityanalysis" routerLinkActive="active">密度分析</a></li>
+        <li><a routerLink="/hotspot/aggregationanalysis" routerLinkActive="active">聚集分析</a></li>
+    
+    </ul>
+  </li>
+
+  <li #control class="dropdown">
+    <a class="dropdown-toggle" (click)="toggle(4)" data-toggle="dropdown" href="#">防控整治
+    <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" style="margin-top:25px;">
+      
+        <li><a routerLink="/control/comparativeanalysis" routerLinkActive="active">对比分析</a></li>
+
+    </ul>
+  </li>
+</nav>
+</div>
+
+<router-outlet></router-outlet>
+<footer>
+      CrimeAnalysis &copy; 2017 
+      <a rel="license" href="javascript:;"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" /></a>
+      &nbsp;All Rights Reserved &nbsp;
+      <a href="http://www.geothinking.cn/crimeanalysis" style="color:#38b7ea;font-weight:600;">CrimeAnalysis</a>
+</footer>
