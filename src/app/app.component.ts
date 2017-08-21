@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import {Title} from '@angular/platform-browser';
 import '../assets/js/jQueryRotate.js';
@@ -18,14 +18,10 @@ angle: number = 0;
 width: number;
 height: number;
 constructor() {}
-
-ngOnInit() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+loadBaseMap() {
     const element = document.getElementById('map');
     element.style.width = this.width +　'px';
     element.style.height = this.height +　'px';
-
     let map = new ol.Map({
         target: 'map',
         layers: [
@@ -50,8 +46,19 @@ ngOnInit() {
           zoom: 12
         })
       });
+}
+ngOnInit() {
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    
+    if (document.webkitFullscreenEnabled == true ) {
+      this.width = window.screen.width;
+      this.height = window.screen.height;
+    }
+    this.loadBaseMap();
   }
 element: HTMLElement = null;
+
 toggle(e) {
     //把菜单栏上的全部caret旋转初始化
      let spans: any = document.querySelectorAll('nav span');
@@ -71,19 +78,25 @@ toggle(e) {
   }
 
   showUI(message: string, event: MouseEvent) {
-    let elem = document.getElementById('controlCAC');
-    if (elem == null) {
+    
+    let control = document.getElementById('controlCAC');
+    if (control == null) {
       this.createControlCAC(message, event);
+    }else {
+      this.styleControlCAC(control, event);
+      this.animateInControlCAC(control);
+      document.getElementById('controlCAC').lastChild.textContent = message;
+    } 
+
+    let chart = document.getElementById('chartCAC');
+    if (chart == null) {
       this.createChartCAC(message);
     }else {
-      this.styleControlCAC(elem, event);
-      this.animateControlCAC(elem);
-
       document.getElementById('chartCAC').lastChild.textContent = message;
-      document.getElementById('controlCAC').lastChild.textContent = message;
     }
 
     $(this.element.querySelector('span')).rotate(0);
+
     $('#controlCAC').draggable({containment: 'body'});
     $('#chartCAC').draggable({ containment: 'body'});
       
@@ -92,19 +105,40 @@ toggle(e) {
 createControlCAC(message: string, event: MouseEvent) {
       let controlCAC = document.createElement('div');
       controlCAC.id = 'controlCAC';
-
       document.querySelector('#myapp').appendChild(controlCAC);
       
       this.styleControlCAC(controlCAC, event);
-      this.animateControlCAC(controlCAC);
+      this.animateInControlCAC(controlCAC);
 
       let headControlCAC = document.createElement('div');
       headControlCAC.setAttribute('style' , 'color:white;background-color:#C62F2F;width:100%;height:50px;box-shadow: 2px 5px 5px rgba(0,0,0,.3);');
       controlCAC.appendChild(headControlCAC);
       headControlCAC.appendChild(document.createTextNode('功能控制区'));
       headControlCAC.style.textAlign = 'center';
-      headControlCAC.style.cursor = 'move';
-
+      let crossAnchor= document.createElement('a');
+      let crossImg=document.createElement('img');
+      crossAnchor.appendChild(crossImg);
+      crossAnchor.href='javascript:void(0);';
+      crossImg.src='../assets/images/cross.png';
+      crossImg.setAttribute('style','margin-top: 2px;margin-right: 2px;width: 16px;height: 16px;');
+      crossAnchor.setAttribute('style','float:right;text-decoration:none;');
+      headControlCAC.appendChild(crossAnchor);
+      crossAnchor.addEventListener('click',(ev)=> {
+        this.animatOutControlCAC(controlCAC);
+      });
+      crossAnchor.addEventListener('mouseenter',()=> {
+        let tip=document.createElement('span');
+        tip.appendChild(document.createTextNode('关闭'));
+        tip.setAttribute('style','position:absolute;margin-top:-38px;margin-left:-15px;font-size:8px;color:#2d3d5a;display:block;width:40px;font-weight:bold;background-color:white;');
+        crossAnchor.appendChild(tip);
+        
+        crossAnchor.addEventListener('mouseleave',()=> {
+        if(crossAnchor.childNodes.length > 1) {
+          crossAnchor.removeChild(crossAnchor.lastChild);
+        }
+      });
+      });
+    
       let contentControlCAC = document.createElement('div');
       contentControlCAC.setAttribute('style' , 'color:white;opacity:0.5;background-color:#C62F2F;width:100%;height:550px;box-shadow: 2px 5px 5px rgba(0,0,0,.3);');
       controlCAC.appendChild(contentControlCAC);
@@ -143,13 +177,26 @@ createChartCAC(message: string) {
       div.style.height = '0px';
   }
   //动画切换功能控制区
-  animateControlCAC(div: HTMLElement) {
+  animateInControlCAC(div: HTMLElement) {
       $(div).animate({
         top: '20px',
         left: '20px',
         width: '310px',
         height: '600px'
       });
+  }
+  animatOutControlCAC(div:HTMLElement) {
+    let bounding=this.element.getBoundingClientRect();
+    let top=bounding.top+'px';
+    let left=bounding.left+'px';
+    $(div).animate({
+      top: top,
+      left:left,
+      width: '0px',
+      height: '0px'
+    },()=> {
+      document.getElementById('myapp').removeChild(div);
+    });
   }
 
 }
