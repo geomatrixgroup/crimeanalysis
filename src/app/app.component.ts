@@ -51,29 +51,23 @@ ngOnInit() {
         })
       });
   }
-
+element: HTMLElement = null;
 toggle(e) {
-    //区分奇偶切换
-    let i: number;
     //把菜单栏上的全部caret旋转初始化
-    let spans: any = document.querySelectorAll('nav span');
+     let spans: any = document.querySelectorAll('nav span');
     spans.forEach(span => {
       $(span).rotate(0);
-    });
-    if (this.angle == 0) {
-      this.angle = 180;
-      i = 1;
-    }else {
-      this.angle = 0;
-      i = 2;
-    }
-    //对当前所选择的caret进行旋转
+    }); 
     let elem = e.srcElement;
-    if (i == 1) {
-      $(elem.querySelector('span')).rotate(this.angle);
-    }else {
+    if (this.element == null || this.element != elem) {
+      $(elem.querySelector('span')).rotate(180);
+      this.angle = 180;
+    }else if ( this.element == elem) {
       $(elem.querySelector('span')).rotate(180 - this.angle);
+      this.angle = 180 - this.angle;
     }
+
+    this.element = elem;
   }
 
   showUI(message: string, event: MouseEvent) {
@@ -88,8 +82,10 @@ toggle(e) {
       document.getElementById('chartCAC').lastChild.textContent = message;
       document.getElementById('controlCAC').lastChild.textContent = message;
     }
-    $('#controlCAC').draggable();
-    $('#chartCAC').draggable();
+
+    $(this.element.querySelector('span')).rotate(0);
+    $('#controlCAC').draggable({containment: 'body'});
+    $('#chartCAC').draggable({ containment: 'body'});
       
   }
 
