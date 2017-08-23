@@ -1,5 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { DragService } from './drag/drag.service';
+import {AnchorService} from './anchor/anchor.service';
 
+import {DepartureService} from './departure/departure.service';
 import {Title} from '@angular/platform-browser';
 import '../assets/js/jQueryRotate.js';
 import 'rxjs/add/operator/filter';
@@ -10,14 +13,15 @@ import * as ol from 'openlayers';
 @Component({
   selector:  'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  providers:[DragService,AnchorService,DepartureService]
 })
 
 export class AppComponent implements OnInit {
 angle: number = 0;
-width: number;
-height: number;
-constructor() {}
+width: number = window.innerWidth;
+height: number= window.innerHeight;
+constructor(private dragService: DragService,private anchorService:AnchorService,private departureService:DepartureService) {}
 loadBaseMap() {
     const element = document.getElementById('map');
     element.style.width = this.width +　'px';
@@ -48,33 +52,32 @@ loadBaseMap() {
       });
 }
 ngOnInit() {
+  window.addEventListener('resize',()=>{ 
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-    
-    if (document.webkitFullscreenEnabled == true ) {
-      this.width = window.screen.width;
-      this.height = window.screen.height;
-    }
-    this.loadBaseMap();
+    this.loadBaseMap(); 
+    //会导致页面创建的元素消失 document.location.reload();
+  });
+  this.loadBaseMap();
   }
-element: HTMLElement = null;
 
-toggle(e) {
+elementClicked: HTMLElement = null;
+
+toggle(event) {
     //把菜单栏上的全部caret旋转初始化
-     let spans: any = document.querySelectorAll('nav span');
-    spans.forEach(span => {
-      $(span).rotate(0);
+    let carets: any = document.querySelectorAll('nav span');
+    carets.forEach(caret => {
+      $(caret).rotate(0);
     }); 
-    let elem = e.srcElement;
-    if (this.element == null || this.element != elem) {
-      $(elem.querySelector('span')).rotate(180);
+    let element = event.srcElement;
+    if (this.elementClicked == null || this.elementClicked != element) {
+      $(element.querySelector('span')).rotate(180);
       this.angle = 180;
-    }else if ( this.element == elem) {
-      $(elem.querySelector('span')).rotate(180 - this.angle);
+    }else if ( this.elementClicked == element) {
+      $(element.querySelector('span')).rotate(180 - this.angle);
       this.angle = 180 - this.angle;
     }
-
-    this.element = elem;
+    this.elementClicked = element;
   }
 
   showUI(message: string, event: MouseEvent) {
@@ -95,9 +98,11 @@ toggle(e) {
       document.getElementById('chartCAC').lastChild.textContent = message;
     }
 
-    $(this.element.querySelector('span')).rotate(0);
-
-    $('#controlCAC').draggable({containment: 'body'});
+    $(this.elementClicked.querySelector('span')).rotate(0);
+    let head=document.getElementById('headControlCAC');
+    let element=$('#controlCAC');
+    this.dragService.makeDraggable(head,element);  
+    
     $('#chartCAC').draggable({ containment: 'body'});
       
   }
@@ -111,32 +116,19 @@ createControlCAC(message: string, event: MouseEvent) {
       this.animateInControlCAC(controlCAC);
 
       let headControlCAC = document.createElement('div');
-      headControlCAC.setAttribute('style' , 'color:white;background-color:#C62F2F;width:100%;height:50px;box-shadow: 2px 5px 5px rgba(0,0,0,.3);');
+      headControlCAC.id='headControlCAC';
+      headControlCAC.setAttribute('style' , 'cursor:move;color:white;background-color:#C62F2F;width:100%;height:50px;box-shadow: 2px 5px 5px rgba(0,0,0,.3);');
       controlCAC.appendChild(headControlCAC);
       headControlCAC.appendChild(document.createTextNode('功能控制区'));
       headControlCAC.style.textAlign = 'center';
-      let crossAnchor= document.createElement('a');
-      let crossImg=document.createElement('img');
-      crossAnchor.appendChild(crossImg);
-      crossAnchor.href='javascript:void(0);';
-      crossImg.src='../assets/images/cross.png';
-      crossImg.setAttribute('style','margin-top: 2px;margin-right: 2px;width: 16px;height: 16px;');
-      crossAnchor.setAttribute('style','float:right;text-decoration:none;');
-      headControlCAC.appendChild(crossAnchor);
-      crossAnchor.addEventListener('click',(ev)=> {
-        this.animatOutControlCAC(controlCAC);
+
+      this.anchorService.createCrossAnchor(headControlCAC,controlCAC,'关闭');
+      this.anchorService.createMinusAnchor(headControlCAC,controlCAC,'最小化');
+      this.anchorService.getCrossAnchor().addEventListener('click',(ev)=> {
+        this.departureService.depart(controlCAC,this.elementClicked);
       });
-      crossAnchor.addEventListener('mouseenter',()=> {
-        let tip=document.createElement('span');
-        tip.appendChild(document.createTextNode('关闭'));
-        tip.setAttribute('style','position:absolute;margin-top:-38px;margin-left:-15px;font-size:8px;color:#2d3d5a;display:block;width:40px;font-weight:bold;background-color:white;');
-        crossAnchor.appendChild(tip);
-        
-        crossAnchor.addEventListener('mouseleave',()=> {
-        if(crossAnchor.childNodes.length > 1) {
-          crossAnchor.removeChild(crossAnchor.lastChild);
-        }
-      });
+      this.anchorService.getMinusAnchor().addEventListener('click',()=>{
+        alert('Please wating...');
       });
     
       let contentControlCAC = document.createElement('div');
@@ -185,18 +177,5 @@ createChartCAC(message: string) {
         height: '600px'
       });
   }
-  animatOutControlCAC(div:HTMLElement) {
-    let bounding=this.element.getBoundingClientRect();
-    let top=bounding.top+'px';
-    let left=bounding.left+'px';
-    $(div).animate({
-      top: top,
-      left:left,
-      width: '0px',
-      height: '0px'
-    },()=> {
-      document.getElementById('myapp').removeChild(div);
-    });
-  }
-
+    
 }
