@@ -1,8 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, ElementRef,Input,ViewChild} from '@angular/core';
 import { DragService } from './drag/drag.service';
 import {AnchorService} from './anchor/anchor.service';
 
 import {DepartureService} from './departure/departure.service';
+import {LoadService} from './load/load.service';
 import {Title} from '@angular/platform-browser';
 import '../assets/js/jQueryRotate.js';
 import 'rxjs/add/operator/filter';
@@ -10,59 +11,68 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 declare let $: any;
 import * as ol from 'openlayers';
+declare let Cesium: any;
 @Component({
   selector:  'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers:[DragService,AnchorService,DepartureService]
+  providers:[DragService,AnchorService,DepartureService,LoadService]
 })
 
 export class AppComponent implements OnInit {
 angle: number = 0;
 width: number = window.innerWidth;
 height: number= window.innerHeight;
-constructor(private dragService: DragService,private anchorService:AnchorService,private departureService:DepartureService) {}
-loadBaseMap() {
-    const element = document.getElementById('map');
-    element.style.width = this.width +　'px';
-    element.style.height = this.height +　'px';
-    let map = new ol.Map({
-        target: 'map',
-        layers: [
-          new ol.layer.Tile({
-            source: new ol.source.XYZ({
-              url: 'http://t4.tianditu.com/DataServer?T=vec_w&x={x}&y={y}&l={z}'
-            })
-          }),
-           new ol.layer.Tile({
-            title: '天地图文字标注',
-            source: new ol.source.XYZ({
-              url: 'http://t4.tianditu.com/DataServer?T=cva_w&x={x}&y={y}&l={z}'
-            })
-          })
-        ],
-        controls: ol.control.defaults({
-          attribution: false,
-          rotate: false
-        }),
-        view: new ol.View({
-          center: ol.proj.fromLonLat([116.3912, 39.9045]),
-          zoom: 12
-        })
-      });
-}
-ngOnInit() {
-  window.addEventListener('resize',()=>{ 
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.loadBaseMap(); 
-    //会导致页面创建的元素消失 document.location.reload();
-  });
-  this.loadBaseMap();
+mapViewer:ol.Map;
+cameraHeight:number=5000;
+loadingType:number=1;
+
+constructor(private dragService: DragService,private anchorService:AnchorService,private departureService:DepartureService,private loadService:LoadService) {
+    Cesium.BingMapsApi.defaultKey='Ar5xntpmtDoZkRumcJHMUcQqWX4boLc5FN5GfLG99nWkKsmLSNM3CGEjJpo3WZRg';
+    (<any>window).CESIUM_BASE_URL = '/assets/Cesium';
   }
 
+ngOnInit() {
+    window.addEventListener('resize',()=>{ 
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.loadService.loadBaseMap(this.centerXY,this.loadingType,this.width,this.height,<HTMLDivElement>document.getElementById('map'));
+    //会导致页面创建的元素消失 document.location.reload();
+  });
+  this.loadService.loadBaseMap(this.centerXY,this.loadingType,this.width,this.height,<HTMLDivElement>document.getElementById('map'));
+  //this.createToggle();
+  }
+
+centerXY:[number,number]=[116.3912, 39.9045];
 elementClicked: HTMLElement = null;
 
+createToggle(){ 
+  let map=document.getElementById('map');
+  let cesiumContainer=document.getElementById('cesiumContainer');
+  if(document.getElementById('toggle-btn')==null){
+
+  let element=document.createElement('button');
+  element.id='toggle-btn';
+  element.appendChild(document.createTextNode('切换'));
+  element.setAttribute('style','position:absolute;bottom:0px;left:40px');
+  element.addEventListener('click',() => {
+    if(this.loadingType==0){
+      let center=ol.proj.transform(this.loadService.view.getView().getCenter(),'EPSG:3857','EPSG:4326');
+      this.centerXY[0]=center[0];
+      this.centerXY[1]=center[1];
+      this.loadingType=1;
+    }else{
+      let cameraCenter=this.loadService.getMap().scene.globe.ellipsoid.cartesianToCartographic(this.loadService.getMap().camera.position);
+      this.centerXY[0]=Cesium.Math.toDegrees(cameraCenter.longitude);
+      this.centerXY[1]=Cesium.Math.toDegrees(cameraCenter.latitude);
+      this.cameraHeight=cameraCenter.height;
+      this.loadingType=0;
+    } 
+    this.loadService.loadBaseMap(this.centerXY,this.loadingType,this.width,this.height,<HTMLDivElement>document.getElementById('map'));
+  });
+  document.querySelector('#myapp').appendChild(element);
+  }
+}
 toggle(event) {
     //把菜单栏上的全部caret旋转初始化
     let carets: any = document.querySelectorAll('nav span');
