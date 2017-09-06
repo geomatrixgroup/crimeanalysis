@@ -4,41 +4,44 @@ import { Injectable } from '@angular/core';
 export class AnchorService {
   crossAnchor:HTMLAnchorElement;
   minusAnchor:HTMLAnchorElement;
+  restoreAnchor:HTMLAnchorElement;
   constructor() { }
-  createAnchor(head:HTMLElement,parent:HTMLElement,text:string):HTMLAnchorElement{
+  createAnchor(head:HTMLElement,callback?:(a:HTMLAnchorElement,img:HTMLImageElement)=>void                                                                                                                  ):HTMLAnchorElement{
       let anchor= document.createElement('a');    
       let img=document.createElement('img');
       anchor.appendChild(img);
-      anchor.href='javascript:void(0);';   
-      if(text=='关闭'){
-        img.src='../assets/images/cross.png';
-      }else{
-        img.src='../assets/images/minus.png';
-      }
-      img.setAttribute('style','margin-top: 2px;margin-right: 4px;width: 16px;height: 16px;');
-      anchor.setAttribute('style','float:right;text-decoration:none;');
+      anchor.href='javascript:void(0);';
+      img.src='../assets/images/cross.png';
+      img.setAttribute('style','width: 16px;height: 16px;');
+      anchor.setAttribute('style','float:right;text-decoration:none;'); 
       head.appendChild(anchor);
-      anchor.addEventListener('mouseenter',()=> {
-        let tip=document.createElement('span');
-        tip.appendChild(document.createTextNode(text));
-        tip.setAttribute('style','position:absolute;margin-top:-38px;margin-left:-15px;font-size:8px;color:#2d3d5a;display:block;width:40px;font-weight:bold;background-color:white;');
-        anchor.appendChild(tip);
-    
-        anchor.addEventListener('mouseleave',()=> {
-        if(anchor.childNodes.length > 1) {
-          anchor.removeChild(anchor.lastChild);
-        }
-      });
-    });
+    if(callback!==undefined){ 
+      callback(anchor,img);
+    }
     return anchor;
   }
-  createCrossAnchor(head:HTMLElement,parent:HTMLElement,text:string){
-      this.crossAnchor=this.createAnchor(head,parent,text);
+  createCrossAnchor(head:HTMLElement){
+      this.crossAnchor=this.createAnchor(head,function(anchor,img){
+        anchor.setAttribute('title','关闭');
+      });
   }
 
-  createMinusAnchor(head:HTMLElement,parent:HTMLElement,text:string){
-      this.minusAnchor=this.createAnchor(head,parent,text);
+  createMinusAnchor(head:HTMLElement){
+      this.minusAnchor=this.createAnchor(head,function(anchor,img){
+        img.src='../assets/images/minus.png'; 
+        anchor.setAttribute('title','最小化');
+    });
   }
+
+  
+  createRestoreAnchor(head:HTMLElement){
+      this.restoreAnchor=this.createAnchor(head,function(anchor,img){
+        img.src='../assets/images/restore.png'; 
+        anchor.setAttribute('title','恢复');
+    });
+  }
+  
+  getRestoreAnchor(){return this.restoreAnchor;}
   getCrossAnchor(){return this.crossAnchor;}
   getMinusAnchor(){return this.minusAnchor;}
 

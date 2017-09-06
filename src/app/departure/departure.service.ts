@@ -4,17 +4,17 @@ import $ from 'jquery';
 export class DepartureService {
 
   constructor() { }
- depart(parent:HTMLElement,elementClicked:HTMLElement){
+ depart(control:HTMLElement,elementClicked:HTMLElement){
     let bounding=elementClicked.getBoundingClientRect();
     let top=bounding.top+'px';
     let left=bounding.left+'px';
-    $(parent).animate({
+    $(control).animate({
       top: top,
       left:left,
       width: '0px',
       height: '0px'
     },()=> {
-      document.getElementById('myapp').removeChild(parent);
+     control.remove();
     });
   }
  }

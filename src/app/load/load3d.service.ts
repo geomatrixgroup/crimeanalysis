@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
-declare let Cesium:any;
 @Injectable()
 export class Load3DService {
-  cesiumViewer:any;
-  loadType:number;
-  constructor() { }
+  private viewer:any;
+  private height:number;
+  constructor() {
+    this.height=10000;
+    Cesium.BingMapsApi.defaultKey='Ar5xntpmtDoZkRumcJHMUcQqWX4boLc5FN5GfLG99nWkKsmLSNM3CGEjJpo3WZRg';
+    (<any>window).CESIUM_BASE_URL = '/assets/cesium';
+   }
   loadBaseMap(center:[number,number],height:number){
-    let point = Cesium.Cartesian3.fromDegrees(center[0],center[1],height);
-    this.cesiumViewer = new Cesium.Viewer('map', {
+    alert('PS:尝试使用QWEASD键和鼠标左键拖动，来查看镜头效果');
+    let point = Cesium.Cartesian3.fromDegrees(center[0],center[1],this.height);
+    this.viewer = new Cesium.Viewer('map', {
         scene3DOnly: true,
         homeButton: false,
         selectionIndicator: false,
@@ -19,22 +23,23 @@ export class Load3DService {
     });
   
   //隐藏左下角默认的Cesium版权文本
-  this.cesiumViewer._cesiumWidget._creditContainer.style.display='none';
-  this.cesiumViewer.camera.setView({
+  this.viewer._cesiumWidget._creditContainer.style.display='none';
+  this.viewer.camera.setView({
     destination : point,
     orientation: {
             heading : Cesium.Math.toRadians(0), // 方向
-            pitch : Cesium.Math.toRadians(-90.0),// 倾斜角度
+            pitch : Cesium.Math.toRadians(-30.0),// 倾斜角度
             roll : Cesium.Math.toRadians(0)
         }
     });
-    let scene=this.cesiumViewer.scene;
-    let canvas=this.cesiumViewer.canvas;
+
+    let scene=this.viewer.scene;
+    let canvas=this.viewer.canvas;
     canvas.setAttribute('tabindex','0');
     canvas.onclick=function(){
         canvas.focus();
     };
-    let ellipsoid=this.cesiumViewer.scene.globe.ellipsoid;
+    let ellipsoid=this.viewer.scene.globe.ellipsoid;
     scene.screenSpaceCameraController.enableRotate = false;
     scene.screenSpaceCameraController.enableTranslate = false;
     scene.screenSpaceCameraController.enableZoom = false;
@@ -81,8 +86,8 @@ document.addEventListener('keyup', (e) =>{
     }
 }, false);
 
-this.cesiumViewer.clock.onTick.addEventListener((clock)=> {
-    let camera = this.cesiumViewer.camera;
+this.viewer.clock.onTick.addEventListener((clock)=> {
+    let camera = this.viewer.camera;
     if (flags.looking) {
         let widtha = canvas.clientWidth;
         let heighta = canvas.clientHeight;
@@ -120,53 +125,6 @@ this.cesiumViewer.clock.onTick.addEventListener((clock)=> {
     }
 });
 
-    let outlineOnly=this.cesiumViewer.entities.add({
-        name:'Only outline not fill color',
-        position:Cesium.Cartesian3.fromDegrees(center[0],center[1],height),
-        box:{
-            dimensions:new Cesium.Cartesian3(40000,40000,40000),
-            fill:true,
-            outline:true,
-            outlineColor:Cesium.Color.RED
-        }
-    });
-    this.cesiumViewer.flyTo(outlineOnly);
-
-    setTimeout(()=>{
-    let greenWall = this.cesiumViewer.entities.add({  
-        name : 'Green wall from surface with outline',  
-        wall : {  
-            positions : Cesium.Cartesian3.fromDegreesArrayHeights(  
-                [-107.0, 43.0, 100000.0,  
-                -97.0, 43.0, 100000.0,  
-                -97.0, 40.0, 100000.0,  
-                -107.0, 40.0, 100000.0,  
-                -107.0, 43.0, 100000.0]),  
-            material : Cesium.Color.GREEN,  
-            outline : true,  
-            outlineColor : Cesium.Color.BLACK  
-        }  
-    });  
-
-    this.cesiumViewer.flyTo(greenWall);
-},5000);
-    setTimeout(()=>{
-        let glowingLine = this.cesiumViewer.entities.add({  
-            name : '具有发光效果的线',  
-            polyline : {  
-                positions : Cesium.Cartesian3.fromDegreesArray(  
-                    [-75, 37, -125, 37]  
-                ),  
-                width : 10,  
-                material : new Cesium.PolylineGlowMaterialProperty({  
-                    glowPower : 0.2,  
-                    color : Cesium.Color.BLUE  
-                })  
-            }  
-        });
-    this.cesiumViewer.flyTo(glowingLine);
-    },10000);
-
   }
 getFlagForKeyCode(keyCode) {
     switch (keyCode) {
@@ -186,5 +144,9 @@ getFlagForKeyCode(keyCode) {
         return undefined;
     }
 }
-  get3DMap(){return this.cesiumViewer;}
+  getCenterXY():[number,number]{
+    let center3D=this.viewer.scene.globe.ellipsoid.cartesianToCartographic(this.viewer.camera.position);
+    this.height=center3D.height;
+    return [Cesium.Math.toDegrees(center3D.longitude),Cesium.Math.toDegrees(center3D.latitude)];
+  }
 }

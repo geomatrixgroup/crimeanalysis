@@ -1,22 +1,23 @@
 <div id="myapp">
 <div id="map" class="map"></div>
 <div id="menuCAC">
-  <nav >
+  <button style="margin-right:10px;"(click)='loginCAC($event);'>登陆</button>
+  <nav>
   <li class="dropdown">
     <a class="dropdown-toggle" (click)="toggle($event)" data-toggle="dropdown" href="#">数据资源
     <span class="caret"></span>
     </a>
     <ul class="dropdown-menu" >
       
-        <li><a (click)="showUI('地理底图', $event);" href='javascript:void(0);'>地理底图</a></li>
+        <li><a (click)="test('dldt', $event);" href='javascript:void(0);'>地理底图</a></li>
     
-        <li><a (click)="showUI('警情事件', $event);" href='javascript:void(0);'>警情事件</a></li>
+        <li><a (click)="test('jqsj', $event);" href='javascript:void(0);'>警情事件</a></li>
     
-        <li><a (click)="showUI('道路交通', $event);" href='javascript:void(0);'>道路交通</a></li>
+        <li><a (click)="test('dljt', $event);" href='javascript:void(0);'>道路交通</a></li>
     
-        <li><a (click)="showUI('专题图层', $event);" href='javascript:void(0);'>专题图层</a></li>
+        <li><a (click)="test('zttc', $event);" href='javascript:void(0);'>专题图层</a></li>
     
-        <li><a (click)="showUI('全文检索', $event);" href='javascript:void(0);'>全文检索</a></li>
+        <li><a (click)="test('qwjs', $event);" href='javascript:void(0);'>全文检索</a></li>
     
     </ul>
   </li>
@@ -27,13 +28,13 @@
     </a>
     <ul class="dropdown-menu">
       
-        <li><a (click)="showUI('区域分析', $event);" href='javascript:void(0);'>区域分析</a></li>
+        <li><a (click)="test('qyfx', $event);" href='javascript:void(0);'>区域分析</a></li>
     
-        <li><a (click)="showUI('指标仪表盘', $event);" href='javascript:void(0);'>指标仪表盘</a></li>
+        <li><a (click)="test('zbybp', $event);" href='javascript:void(0);'>指标仪表盘</a></li>
     
-        <li><a (click)="showUI('关注警情', $event);" href='javascript:void(0);'>关注警情</a></li>
+        <li><a (click)="test('gzjq', $event);" href='javascript:void(0);'>关注警情</a></li>
     
-        <li><a (click)="showUI('警情概况', $event);" href='javascript:void(0);'>警情概况</a></li>
+        <li><a (click)="test('jqgk', $event);" href='javascript:void(0);'>警情概况</a></li>
     
     </ul>
   </li>
@@ -44,8 +45,8 @@
     </a>
     <ul class="dropdown-menu" >
       
-        <li><a (click)="showUI('时序分析', $event);" href='javascript:void(0);'>时序分析</a></li>
-        <li><a (click)="showUI('态势分析', $event);" href='javascript:void(0);'>态势分析</a></li>
+        <li><a (click)="test('sxfx', $event);" href='javascript:void(0);'>时序分析</a></li>
+        <li><a (click)="test('tsfx', $event);" href='javascript:void(0);'>态势分析</a></li>
     </ul>
   </li>
 
@@ -55,8 +56,8 @@
     </a>
     <ul class="dropdown-menu">
       
-        <li><a (click)="showUI('密度分析', $event);" href='javascript:void(0);'>密度分析</a></li>
-        <li><a (click)="showUI('聚集分析', $event);" href='javascript:void(0);'>聚集分析</a></li>
+        <li><a (click)="test('mdfx', $event);" href='javascript:void(0);'>密度分析</a></li>
+        <li><a (click)="test('jjfx', $event);" href='javascript:void(0);'>聚集分析</a></li>
     
     </ul>
   </li>
@@ -67,7 +68,7 @@
     </a>
     <ul class="dropdown-menu">
       
-        <li><a (click)="showUI('对比分析', $event);" href='javascript:void(0);'>对比分析</a></li>
+        <li><a (click)="test('dbfx', $event);" href='javascript:void(0);'>对比分析</a></li>
 
     </ul>
   </li>

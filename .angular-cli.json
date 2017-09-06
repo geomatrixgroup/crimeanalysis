@@ -9,8 +9,7 @@
       "outDir": "dist",
       "assets": [
         "assets",
-        "favicon.ico",
-        "assets/Cesium/"
+        "favicon.ico"
       ],
       "index": "index.html",
       "main": "main.ts",
@@ -21,16 +20,15 @@
       "prefix": "app",
       "styles": [
         "styles.css",
-        "../node_modules/bootstrap/dist/css/bootstrap.css",
-        "../node_modules/openlayers/css/ol.css",
-        "../node_modules/cesium/Source/Widgets/widgets.css"
+        "assets/css/bootstrap.css",
+        "assets/css/ol.css",
+        "assets/cesium/Widgets/widgets.css"
       ],
       "scripts": [
-        "../node_modules/jquery/dist/jquery.js",
+        "assets/js/jquery.js",
         "assets/js/jquery-ui.js",
-        "../node_modules/bootstrap/dist/js/bootstrap.js",
-        "../node_modules/openlayers/dist/ol.js",
-        "../node_modules/cesium/Build/CesiumUnminified/Cesium.js"
+        "assets/js//bootstrap.js",
+        "assets/cesium/cesium.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
